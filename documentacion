@@ -77,15 +77,10 @@ Una lista que muestra el historial.
 
 Un texto que muestra el balance total.
 
-
 5. Formatea el dinero
 
-
 formatear_cop(valor)
-
 Convierte 25000 en $25.000,00 para que se vea más claro y colombiano.
 
-
 Importante:
-
 Este código no guarda los datos permanentemente. Cuando cierras la app, se pierde todo.
