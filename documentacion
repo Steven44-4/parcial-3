@@ -1,29 +1,89 @@
-💰 App de Gastos Personales
+ App de Gastos Personales
 Una aplicación interactiva donde puedes:
 
-👤 1. Iniciar sesión con tu nombre
+ 1. Iniciar sesión con tu nombre
 Te da la bienvenida y personaliza la experiencia.
 
-📝 2. Registrar tus movimientos de dinero
+ 2. Registrar tus movimientos de dinero
 Puedes agregar gastos (como comida, transporte) o ingresos (como sueldo, ventas).
 
 Cada movimiento incluye: fecha, descripción y monto.
 
-📋 3. Ver el historial
+ 3. Ver el historial
 Muestra una lista de todos los ingresos y gastos registrados.
 
 Los montos están formateados como pesos colombianos (COP).
 
-💵 4. Ver el balance total
+ 4. Ver el balance total
 La app suma automáticamente todos los ingresos y resta los gastos.
 
 Te muestra cuánto dinero tienes en total.
 
-🗑️ 5. Eliminar movimientos
+🗑 5. Eliminar movimientos
 Puedes borrar cualquier movimiento que ya no quieras.
 
-📊 6. Ver un resumen final
+ 6. Ver un resumen final
 Al finalizar, ves tu balance final en una pantalla de resumen.
 
-🔁 7. Cerrar sesión o empezar de nuevo
+ 7. Cerrar sesión o empezar de nuevo
 Puedes volver al inicio y comenzar con otro nombre o sesión limpia.
+
+¿Qué hace el código?
+
+Es una aplicación gráfica (hecha con tkinter) donde puedes:
+
+Escribir un gasto o ingreso.
+
+Agregar una descripción y un monto.
+
+Ver un historial de lo que llevas anotado.
+
+Ver el balance total (lo que te queda).
+
+
+¿Cómo funciona por partes?
+
+1. Importaciones
+
+import tkinter, datetime, locale
+
+Se usan para crear la ventana, mostrar la fecha actual y formatear el dinero como pesos colombianos.
+
+2. Lista de movimientos
+
+movimientos = []
+
+Aquí se van guardando los gastos e ingresos que agregas.
+
+3. Funciones principales
+
+agregar_movimiento(): toma lo que escribes y lo guarda.
+
+actualizar_lista(): muestra todos los movimientos y calcula el total.
+
+limpiar_campos(): borra lo que escribiste para que agregues otro.
+
+4. Interfaz con tkinter
+
+Tiene campos para escribir la descripción y el monto.
+
+Dos botones para elegir: Gasto o Ingreso.
+
+Un botón para agregar.
+
+Una lista que muestra el historial.
+
+Un texto que muestra el balance total.
+
+
+5. Formatea el dinero
+
+
+formatear_cop(valor)
+
+Convierte 25000 en $25.000,00 para que se vea más claro y colombiano.
+
+
+Importante:
+
+Este código no guarda los datos permanentemente. Cuando cierras la app, se pierde todo.
