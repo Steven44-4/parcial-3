@@ -1,0 +1,29 @@
+💰 App de Gastos Personales
+Una aplicación interactiva donde puedes:
+
+👤 1. Iniciar sesión con tu nombre
+Te da la bienvenida y personaliza la experiencia.
+
+📝 2. Registrar tus movimientos de dinero
+Puedes agregar gastos (como comida, transporte) o ingresos (como sueldo, ventas).
+
+Cada movimiento incluye: fecha, descripción y monto.
+
+📋 3. Ver el historial
+Muestra una lista de todos los ingresos y gastos registrados.
+
+Los montos están formateados como pesos colombianos (COP).
+
+💵 4. Ver el balance total
+La app suma automáticamente todos los ingresos y resta los gastos.
+
+Te muestra cuánto dinero tienes en total.
+
+🗑️ 5. Eliminar movimientos
+Puedes borrar cualquier movimiento que ya no quieras.
+
+📊 6. Ver un resumen final
+Al finalizar, ves tu balance final en una pantalla de resumen.
+
+🔁 7. Cerrar sesión o empezar de nuevo
+Puedes volver al inicio y comenzar con otro nombre o sesión limpia.
