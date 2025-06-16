@@ -19,7 +19,7 @@ La app suma automáticamente todos los ingresos y resta los gastos.
 
 Te muestra cuánto dinero tienes en total.
 
-🗑 5. Eliminar movimientos
+ 5. Eliminar movimientos
 Puedes borrar cualquier movimiento que ya no quieras.
 
  6. Ver un resumen final
@@ -27,6 +27,8 @@ Al finalizar, ves tu balance final en una pantalla de resumen.
 
  7. Cerrar sesión o empezar de nuevo
 Puedes volver al inicio y comenzar con otro nombre o sesión limpia.
+
+CODIGO:
 
 ¿Qué hace el código?
 
