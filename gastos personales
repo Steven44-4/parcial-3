@@ -9,150 +9,153 @@ try:
 except:
     locale.setlocale(locale.LC_ALL, '')
 
-# Lista para guardar los movimientos
-movimientos = []
-nombre_usuario = ""  # Global para acceder desde otras ventanas
-
 def formatear_cop(valor):
     try:
         return locale.currency(valor, grouping=True)
     except:
         return f"${valor:,.2f}".replace(",", "#").replace(".", ",").replace("#", ".")
 
-def agregar_movimiento():
-    tipo = tipo_var.get()
-    descripcion = entrada_descripcion.get()
-    monto = entrada_monto.get()
+class AppGastos:
+    def __init__(self):
+        self.movimientos = []
+        self.nombre_usuario = ""
+        self.ventana_inicio = None
+        self.ventana_principal = None
+        self.entrada_nombre = None
+        self.entrada_descripcion = None
+        self.entrada_monto = None
+        self.tipo_var = None
+        self.lista = None
+        self.etiqueta_total = None
+        self.mostrar_menu_inicio()
 
-    if not descripcion or not monto:
-        messagebox.showwarning("Campos vacíos", "Completa todos los campos.")
-        return
+    def mostrar_menu_inicio(self):
+        self.ventana_inicio = tk.Tk()
+        self.ventana_inicio.title("Inicio - App de Gastos")
+        self.ventana_inicio.geometry("300x200")
+        self.ventana_inicio.resizable(False, False)
 
-    try:
-        monto = float(monto)
-    except ValueError:
-        messagebox.showerror("Error", "El monto debe ser un número.")
-        return
+        tk.Label(self.ventana_inicio, text="¡Bienvenido!", font=("Arial", 14)).pack(pady=10)
+        tk.Label(self.ventana_inicio, text="Ingresa tu nombre:").pack()
+        self.entrada_nombre = tk.Entry(self.ventana_inicio, width=30)
+        self.entrada_nombre.pack(pady=5)
 
-    if tipo == "Gasto":
-        monto = -abs(monto)
+        tk.Button(self.ventana_inicio, text="Iniciar", command=self.iniciar_app).pack(pady=20)
+        self.ventana_inicio.mainloop()
 
-    fecha = datetime.now().strftime("%d/%m/%Y")
-    movimientos.append((fecha, descripcion, monto))
+    def iniciar_app(self):
+        nombre = self.entrada_nombre.get().strip()
+        if not nombre:
+            messagebox.showwarning("Nombre requerido", "Por favor ingresa tu nombre.")
+            return
 
-    actualizar_lista()
-    limpiar_campos()
+        self.nombre_usuario = nombre
+        self.ventana_inicio.destroy()
+        self.crear_ventana_principal()
 
-def eliminar_movimiento():
-    seleccion = lista.curselection()
-    if not seleccion:
-        messagebox.showwarning("Selecciona un movimiento", "Debes seleccionar un elemento de la lista para eliminarlo.")
-        return
+    def crear_ventana_principal(self):
+        self.ventana_principal = tk.Tk()
+        self.ventana_principal.title(f"💰 App de Gastos - Bienvenido, {self.nombre_usuario}")
+        self.ventana_principal.geometry("400x580")
+        self.ventana_principal.resizable(False, False)
 
-    indice = seleccion[0]
-    del movimientos[indice]
-    actualizar_lista()
+        tk.Label(self.ventana_principal, text="Descripción:").pack()
+        self.entrada_descripcion = tk.Entry(self.ventana_principal, width=40)
+        self.entrada_descripcion.pack()
 
-def actualizar_lista():
-    lista.delete(0, tk.END)
-    total = 0
-    for mov in movimientos:
-        fecha, desc, monto = mov
-        lista.insert(tk.END, f"{fecha} - {desc}: {formatear_cop(monto)}")
-        total += monto
-    etiqueta_total.config(text=f"Balance total: {formatear_cop(total)}")
+        tk.Label(self.ventana_principal, text="Monto:").pack()
+        self.entrada_monto = tk.Entry(self.ventana_principal, width=20)
+        self.entrada_monto.pack()
 
-def limpiar_campos():
-    entrada_descripcion.delete(0, tk.END)
-    entrada_monto.delete(0, tk.END)
-    tipo_var.set("Gasto")
+        self.tipo_var = tk.StringVar(value="Gasto")
+        tk.Radiobutton(self.ventana_principal, text="Gasto", variable=self.tipo_var, value="Gasto").pack()
+        tk.Radiobutton(self.ventana_principal, text="Ingreso", variable=self.tipo_var, value="Ingreso").pack()
 
-def iniciar_app():
-    global nombre_usuario
-    nombre = entrada_nombre.get().strip()
-    if not nombre:
-        messagebox.showwarning("Nombre requerido", "Por favor ingresa tu nombre.")
-        return
+        tk.Button(self.ventana_principal, text="Agregar movimiento", command=self.agregar_movimiento).pack(pady=10)
 
-    nombre_usuario = nombre
-    ventana_inicio.destroy()
-    crear_ventana_principal()
+        tk.Label(self.ventana_principal, text="Historial:").pack()
+        self.lista = tk.Listbox(self.ventana_principal, width=50)
+        self.lista.pack(pady=5)
 
-def volver_al_inicio():
-    ventana.destroy()
-    movimientos.clear()
-    mostrar_menu_inicio()
+        tk.Button(self.ventana_principal, text="Eliminar seleccionado", command=self.eliminar_movimiento).pack(pady=5)
 
-def mostrar_resumen():
-    ventana.destroy()
+        self.etiqueta_total = tk.Label(self.ventana_principal, text="Balance total: $0.00", font=("Arial", 12, "bold"))
+        self.etiqueta_total.pack(pady=10)
 
-    total_final = sum(m[2] for m in movimientos)
-    resumen = tk.Tk()
-    resumen.title("Resumen final")
-    resumen.geometry("300x200")
-    resumen.resizable(False, False)
+        tk.Button(self.ventana_principal, text="Finalizar y ver balance", bg="lightgreen", command=self.mostrar_resumen).pack(pady=10)
+        tk.Button(self.ventana_principal, text="Cerrar sesión / Volver al inicio", fg="red", command=self.volver_al_inicio).pack(pady=10)
 
-    tk.Label(resumen, text=f"Resumen de {nombre_usuario}", font=("Arial", 14, "bold")).pack(pady=10)
-    tk.Label(resumen, text=f"Balance final: {formatear_cop(total_final)}", font=("Arial", 12)).pack(pady=10)
+        self.ventana_principal.mainloop()
 
-    tk.Button(resumen, text="Volver al inicio", command=lambda:[resumen.destroy(), movimientos.clear(), mostrar_menu_inicio()]).pack(pady=5)
-    tk.Button(resumen, text="Salir", command=resumen.quit).pack(pady=5)
+    def agregar_movimiento(self):
+        tipo = self.tipo_var.get()
+        descripcion = self.entrada_descripcion.get()
+        monto = self.entrada_monto.get()
 
-    resumen.mainloop()
+        if not descripcion or not monto:
+            messagebox.showwarning("Campos vacíos", "Completa todos los campos.")
+            return
 
-def crear_ventana_principal():
-    global ventana, entrada_descripcion, entrada_monto, tipo_var, lista, etiqueta_total
+        try:
+            monto = float(monto)
+        except ValueError:
+            messagebox.showerror("Error", "El monto debe ser un número.")
+            return
 
-    ventana = tk.Tk()
-    ventana.title(f"💰 App de Gastos - Bienvenido, {nombre_usuario}")
-    ventana.geometry("400x580")
-    ventana.resizable(False, False)
+        if tipo == "Gasto":
+            monto = -abs(monto)
 
-    tk.Label(ventana, text="Descripción:").pack()
-    entrada_descripcion = tk.Entry(ventana, width=40)
-    entrada_descripcion.pack()
+        fecha = datetime.now().strftime("%d/%m/%Y")
+        self.movimientos.append((fecha, descripcion, monto))
+        self.actualizar_lista()
+        self.limpiar_campos()
 
-    tk.Label(ventana, text="Monto:").pack()
-    entrada_monto = tk.Entry(ventana, width=20)
-    entrada_monto.pack()
+    def eliminar_movimiento(self):
+        seleccion = self.lista.curselection()
+        if not seleccion:
+            messagebox.showwarning("Selecciona un movimiento", "Debes seleccionar un elemento de la lista para eliminarlo.")
+            return
 
-    tipo_var = tk.StringVar(value="Gasto")
-    tk.Radiobutton(ventana, text="Gasto", variable=tipo_var, value="Gasto").pack()
-    tk.Radiobutton(ventana, text="Ingreso", variable=tipo_var, value="Ingreso").pack()
+        indice = seleccion[0]
+        del self.movimientos[indice]
+        self.actualizar_lista()
 
-    tk.Button(ventana, text="Agregar movimiento", command=agregar_movimiento).pack(pady=10)
+    def actualizar_lista(self):
+        self.lista.delete(0, tk.END)
+        total = 0
+        for fecha, desc, monto in self.movimientos:
+            self.lista.insert(tk.END, f"{fecha} - {desc}: {formatear_cop(monto)}")
+            total += monto
+        self.etiqueta_total.config(text=f"Balance total: {formatear_cop(total)}")
 
-    tk.Label(ventana, text="Historial:").pack()
-    lista = tk.Listbox(ventana, width=50)
-    lista.pack(pady=5)
+    def limpiar_campos(self):
+        self.entrada_descripcion.delete(0, tk.END)
+        self.entrada_monto.delete(0, tk.END)
+        self.tipo_var.set("Gasto")
 
-    tk.Button(ventana, text="Eliminar seleccionado", command=eliminar_movimiento).pack(pady=5)
+    def mostrar_resumen(self):
+        self.ventana_principal.destroy()
+        total_final = sum(m[2] for m in self.movimientos)
 
-    etiqueta_total = tk.Label(ventana, text="Balance total: $0.00", font=("Arial", 12, "bold"))
-    etiqueta_total.pack(pady=10)
+        resumen = tk.Tk()
+        resumen.title("Resumen final")
+        resumen.geometry("300x200")
+        resumen.resizable(False, False)
 
-    tk.Button(ventana, text="Finalizar y ver balance", bg="lightgreen", command=mostrar_resumen).pack(pady=10)
+        tk.Label(resumen, text=f"Resumen de {self.nombre_usuario}", font=("Arial", 14, "bold")).pack(pady=10)
+        tk.Label(resumen, text=f"Balance final: {formatear_cop(total_final)}", font=("Arial", 12)).pack(pady=10)
 
-    tk.Button(ventana, text="Cerrar sesión / Volver al inicio", fg="red", command=volver_al_inicio).pack(pady=10)
+        tk.Button(resumen, text="Volver al inicio", command=lambda: [resumen.destroy(), self.volver_al_inicio()]).pack(pady=5)
+        tk.Button(resumen, text="Salir", command=resumen.quit).pack(pady=5)
 
-    ventana.mainloop()
+        resumen.mainloop()
 
-def mostrar_menu_inicio():
-    global ventana_inicio, entrada_nombre
+    def volver_al_inicio(self):
+        if self.ventana_principal:
+            self.ventana_principal.destroy()
+        self.movimientos.clear()
+        self.mostrar_menu_inicio()
 
-    ventana_inicio = tk.Tk()
-    ventana_inicio.title("Inicio - App de Gastos")
-    ventana_inicio.geometry("300x200")
-    ventana_inicio.resizable(False, False)
 
-    tk.Label(ventana_inicio, text="¡Bienvenido!", font=("Arial", 14)).pack(pady=10)
-    tk.Label(ventana_inicio, text="Ingresa tu nombre:").pack()
-    entrada_nombre = tk.Entry(ventana_inicio, width=30)
-    entrada_nombre.pack(pady=5)
-
-    tk.Button(ventana_inicio, text="Iniciar", command=iniciar_app).pack(pady=20)
-
-    ventana_inicio.mainloop()
-
-# Iniciar la app
-mostrar_menu_inicio()
+if __name__ == "__main__":
+    AppGastos()
